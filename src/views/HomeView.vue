@@ -4,7 +4,13 @@
 
     <div class="content" v-if="dirHandle" style="display: flex">
       <div class="tree" style="width: 500px">
-        <Tree :data="tree" />
+        <ul>
+          <li v-for="item in tree" :key="item.key">
+            <span @click="showFile(item)">{{ item.key }}</span>
+            <span @click="remove(item.key)">删除</span>
+            <tree :data="item.children"></tree>
+          </li>
+        </ul>
         <button @click="addFile">+ 新建文件</button>
       </div>
 

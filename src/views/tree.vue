@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: "tree",
+  name: "f-tree",
   props: {
     data: Object,
   },

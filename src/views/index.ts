@@ -1,11 +1,9 @@
 import { ref, watch } from "vue";
 
 import { createFolder, createFile, getDirectory } from "./fs";
-import Tree from "./tree.vue";
 
 export default {
   name: "App",
-  components: { Tree },
   setup() {
     const dirHandle = ref<FileSystemDirectoryHandle>();
     const tree = ref<any[]>([]);
@@ -37,7 +35,8 @@ export default {
     };
 
     const fileContent = ref("");
-    const currFileHandle = ref();
+    let prevFileContent = "";
+    let currFileHandle: FileSystemFileHandle;
     const showFile = async (item: {
       key: string;
       value: FileSystemFileHandle | FileSystemDirectoryHandle;
@@ -45,19 +44,45 @@ export default {
       if (item.value.kind === "file") {
         const file = await item.value.getFile();
         fileContent.value = await file.text();
-        currFileHandle.value = item;
+        currFileHandle = item.value;
+        prevFileContent = fileContent.value;
       } else {
         alert("暂时不支持文件夹");
       }
     };
 
     async function saveFile() {
-      const writable = await currFileHandle.value.value.createWritable();
+      const writable = await currFileHandle.createWritable();
       // writable.truncate(0);
       await writable.write(fileContent.value);
       await writable.close();
       alert("保存成功！");
+      prevFileContent = fileContent.value;
     }
+
+    const syncContent = async () => {
+      if (!currFileHandle) return;
+      if (prevFileContent !== fileContent.value) return;
+
+      const file = await currFileHandle.getFile();
+      fileContent.value = await file.text();
+      prevFileContent = fileContent.value;
+    };
+
+    let timid = 0;
+    function time() {
+      clearTimeout(timid);
+      timid = setTimeout(async () => {
+        try {
+          await syncContent();
+          time();
+        } catch (e) {
+          clearTimeout(timid);
+        }
+      }, 1000);
+    }
+
+    time();
 
     return {
       chooseDirectory,

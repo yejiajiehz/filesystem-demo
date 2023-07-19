@@ -1,18 +1,27 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    <button v-if="!dirHandle" @click="chooseDirectory">选择文件夹</button>
+
+    <div class="content" v-if="dirHandle" style="display: flex">
+      <div class="tree" style="width: 500px">
+        <Tree :data="tree" />
+        <button @click="addFile">+ 新建文件</button>
+      </div>
+
+      <div style="flex: 1">
+        <textarea v-model="fileContent"></textarea>
+        <button @click="saveFile">保存</button>
+      </div>
+    </div>
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
-
-@Options({
-  components: {
-    HelloWorld,
-  },
-})
-export default class HomeView extends Vue {}
-</script>
+<script lang="ts" src="./index"></script>
+<style>
+textarea {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+}
+</style>

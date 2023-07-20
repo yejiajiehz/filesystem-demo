@@ -1,12 +1,15 @@
-import { ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 
 import { createFolder, createFile, getDirectory } from "./fs";
+import Tree from "./tree.vue";
+import { initDb } from "./db";
 
 export default {
   name: "App",
+  components: { Tree },
   setup() {
     const dirHandle = ref<FileSystemDirectoryHandle>();
-    const tree = ref<any[]>([]);
+    const tree = reactive<any[]>([]);
 
     const chooseDirectory = async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -15,12 +18,28 @@ export default {
         mode: "readwrite",
       });
 
+      addFs(dirHandle.value);
+
       refreshTree();
     };
 
+    let getFs: any, addFs: any;
+    onMounted(() => {
+      const r = initDb(async () => {
+        dirHandle.value = await getFs();
+        if (dirHandle.value) {
+          refreshTree();
+        }
+      });
+
+      getFs = r.getFs;
+      addFs = r.addFs;
+    });
+
     const refreshTree = async () => {
+      tree.length = 0;
       if (dirHandle.value) {
-        tree.value = (await getDirectory(dirHandle.value)) || [];
+        tree.push(...((await getDirectory(dirHandle.value)) || []));
       }
     };
 
@@ -37,9 +56,12 @@ export default {
     const fileContent = ref("");
     let prevFileContent = "";
     let currFileHandle: FileSystemFileHandle;
+    let currFolderHandle: FileSystemDirectoryHandle;
+
     const showFile = async (item: {
       key: string;
       value: FileSystemFileHandle | FileSystemDirectoryHandle;
+      children: any[];
     }) => {
       if (item.value.kind === "file") {
         const file = await item.value.getFile();
@@ -47,7 +69,8 @@ export default {
         currFileHandle = item.value;
         prevFileContent = fileContent.value;
       } else {
-        alert("暂时不支持文件夹");
+        item.children = await getDirectory(item.value);
+        currFolderHandle = item.value;
       }
     };
 

@@ -30,7 +30,7 @@ export async function getDirectory(dirHandle: FileSystemDirectoryHandle) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   for await (const [key, value] of dirHandle.entries()) {
-    array.push({ key, value });
+    array.push({ key, value, children: [] });
   }
   return array;
 }

@@ -32,6 +32,7 @@ export default {
     const cache = ref(false);
     onMounted(() => {
       const r = initDb(async () => {
+        // @ts-ignore
         window.dirHandle = dirHandle.value = await getFs();
         if (dirHandle.value) {
           cache.value = true;

@@ -10,7 +10,10 @@ https://developer.mozilla.org/zh-CN/docs/Web/API/File_and_Directory_Entries_API/
 
 https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryHandle
 
-## 使用 indexDb 保存 dirhandler 对象以便复用
+## 使用 indexDb 保存 FileSystemHandler 对象以便复用
+- 可以优化用户选择文件夹的交互
+- 刷新场景下必须通过 “用户交互” 调用 `requestPermission` 以便获取权限
+
 
 ## 可能的场景
 

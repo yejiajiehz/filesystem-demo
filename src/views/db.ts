@@ -1,9 +1,9 @@
 export function initDb(callback: any) {
   let db: IDBDatabase;
-  const request = indexedDB.open("kayan", 1);
+  const request = indexedDB.open("fs-demo", 1);
 
   request.onupgradeneeded = function () {
-    // 初始化
+    // init db
     db = request.result;
     db.createObjectStore("folder", { autoIncrement: true });
   };

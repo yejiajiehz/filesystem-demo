@@ -1,24 +1,17 @@
 <template>
   <div class="home">
-    <button v-if="!dirHandle" @click="chooseDirectory">选择文件夹</button>
-    <button v-else-if="cache" @click="askPermission">授权 {{ dirHandle.name }}</button>
+    <button v-if="!dirHandle" @click="chooseDirectory">Choose Directory</button>
+    <button v-else-if="requestedPermission" @click="askPermission">Permission {{ dirHandle.name }}</button>
 
     <div class="content" v-else-if="dirHandle" style="display: flex">
       <div class="tree" style="width: 500px">
-        <!-- <ul>
-          <li v-for="item in tree" :key="item.key">
-            <span @click="showFile(item)">{{ item.key }}</span>
-            <span @click="remove(item.key)">删除</span>
-            <tree :data="item.children"></tree>
-          </li>
-        </ul> -->
         <Tree :data="tree" @showFile="showFile" @remove="remove" />
-        <button @click="addFile">+ 新建文件</button>
+        <button @click="addFile">+ New File</button>
       </div>
 
       <div style="flex: 1">
         <textarea v-model="fileContent"></textarea>
-        <button @click="saveFile">保存</button>
+        <button @click="saveFile">Save</button>
       </div>
     </div>
   </div>

@@ -24,18 +24,18 @@ export default {
 
     const askPermission = async () => {
       if (await verifyPermission(dirHandle.value)) {
-        cache.value = false;
+        requestedPermission.value = false;
       }
     }
 
     let getFs: any, addFs: any;
-    const cache = ref(false);
+    const requestedPermission = ref(false);
     onMounted(() => {
       const r = initDb(async () => {
         // @ts-ignore
         window.dirHandle = dirHandle.value = await getFs();
         if (dirHandle.value) {
-          cache.value = true;
+          requestedPermission.value = true;
           refreshTree();
         }
       });
@@ -87,7 +87,7 @@ export default {
       // writable.truncate(0);
       await writable.write(fileContent.value);
       await writable.close();
-      alert("保存成功！");
+      alert("save success!");
       prevFileContent = fileContent.value;
     }
 
@@ -125,7 +125,7 @@ export default {
       fileContent,
       showFile,
       saveFile,
-      cache,
+      requestedPermission,
       askPermission
     };
   },

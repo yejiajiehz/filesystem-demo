@@ -1,8 +1,9 @@
 <template>
   <div class="home">
     <button v-if="!dirHandle" @click="chooseDirectory">选择文件夹</button>
+    <button v-else-if="cache" @click="askPermission">授权 {{ dirHandle.name }}</button>
 
-    <div class="content" v-if="dirHandle" style="display: flex">
+    <div class="content" v-else-if="dirHandle" style="display: flex">
       <div class="tree" style="width: 500px">
         <!-- <ul>
           <li v-for="item in tree" :key="item.key">

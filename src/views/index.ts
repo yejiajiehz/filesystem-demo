@@ -1,6 +1,6 @@
 import { onMounted, reactive, ref, watch } from "vue";
 
-import { createFolder, createFile, getDirectory } from "./fs";
+import { verifyPermission, createFile, getDirectory } from "./fs";
 import Tree from "./tree.vue";
 import { initDb } from "./db";
 
@@ -12,7 +12,6 @@ export default {
     const tree = reactive<any[]>([]);
 
     const chooseDirectory = async () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.dirHandle = dirHandle.value = await window.showDirectoryPicker({
         mode: "readwrite",
@@ -23,11 +22,19 @@ export default {
       refreshTree();
     };
 
+    const askPermission = async () => {
+      if (await verifyPermission(dirHandle.value)) {
+        cache.value = false;
+      }
+    }
+
     let getFs: any, addFs: any;
+    const cache = ref(false);
     onMounted(() => {
       const r = initDb(async () => {
-        dirHandle.value = await getFs();
+        window.dirHandle = dirHandle.value = await getFs();
         if (dirHandle.value) {
+          cache.value = true;
           refreshTree();
         }
       });
@@ -69,7 +76,7 @@ export default {
         currFileHandle = item.value;
         prevFileContent = fileContent.value;
       } else {
-        item.children = await getDirectory(item.value);
+        item.children = await getDirectory(item.value) || [];
         currFolderHandle = item.value;
       }
     };
@@ -117,6 +124,8 @@ export default {
       fileContent,
       showFile,
       saveFile,
+      cache,
+      askPermission
     };
   },
 };
